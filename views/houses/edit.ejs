@@ -1,0 +1,26 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Houses</title>
+</head>
+
+<body>
+    <h1>Edit Houses</h1>
+    <form action="/houses/<%=house._id%>?_method=PUT" method="POST">
+        <div>
+            <label for="title">Title</label>
+            <input type="text" id="title" name="house[title]" value="<%=house.title %>">
+        </div>
+        <div>
+            <label for="location">Location</label>
+            <input type="text" id="location" name="house[location]" value="<%= house.location%>">
+        </div>
+        <button>Update House</button>
+    </form>
+    <a href="/houses/<%= house._id%>">Back To Houses</a>
+
+</body>
+
+</html>s
