@@ -3,7 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const House = require('./models/house');
-
+const ejsMate = require('ejs-mate');
 
 mongoose.connect('mongodb://localhost:27017/hamilton');
 
@@ -20,7 +20,8 @@ db.once("open", () => {
 
 const app = express();
 
-
+//every .ejs file will be rendered by ejsMate package
+app.engine('ejs',ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
