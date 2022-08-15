@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
 const { houseSchemas } = require('../schemas.js');
+const { isLoggedIn } = require('../middleware');
 
 const ExpressError = require('../utils/ExpressError');
 const House = require('../models/house');
@@ -23,14 +24,14 @@ router.get('/', catchAsync(async (req, res) => {
     res.render('houses/index', { houses })
 }))
 
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn,(req, res) => {
     res.render('houses/new');
 })
 
 //CREATE:
 //According to Model to create instance
 //using save() to mongoDB
-router.post('/', validateHouse,catchAsync(async (req, res) => {
+router.post('/',isLoggedIn, validateHouse,catchAsync(async (req, res) => {
     const house = new House(req.body.house);
     await house.save();
     req.flash('success', 'Successfully made a new houses');
@@ -38,7 +39,7 @@ router.post('/', validateHouse,catchAsync(async (req, res) => {
 }))
 
 // req.params : url [compared to req.body: user submitted]
-router.get('/:id', catchAsync(async (req, res,) => {
+router.get('/:id', isLoggedIn,catchAsync(async (req, res,) => {
     const house = await House.findById(req.params.id).populate('reviews');
     if (!house) {
         req.flash('error', 'Cannot find that house information!');
@@ -57,14 +58,14 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
 }))
 
 //...: 1. spread; 2. overwirte same key content
-router.put('/:id',validateHouse, catchAsync(async (req, res) => {
+router.put('/:id',isLoggedIn, validateHouse, catchAsync(async (req, res) => {
     const { id } = req.params;
     const house = await House.findByIdAndUpdate(id, { ...req.body.house });
     req.flash('success', 'Thanks for your update;)');
     res.redirect(`/houses/${house._id}`)
 }));
 
-router.delete('/:id', catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     const { id } = req.params;
     await House.findByIdAndDelete(id);
     req.flash('success', 'This house is not available anymore')
