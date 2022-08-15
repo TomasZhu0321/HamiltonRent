@@ -6,7 +6,8 @@ const House = require('./models/house');
 const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
-const { houseSchemas } = require('./schemas.js');
+const { houseSchemas,reviewSchema } = require('./schemas.js');
+const Review = require('./models/review');
 
 mongoose.connect('mongodb://localhost:27017/hamilton');
 const db = mongoose.connection;
@@ -41,6 +42,15 @@ const validateHouse = (req, res, next) => {
         next();
     }
 }
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
+    }
+}
 
 app.get('/', (req, res) => {
     res.render('home')
@@ -68,7 +78,7 @@ app.post('/houses', validateHouse,catchAsync(async (req, res) => {
 
 // req.params : url [compared to req.body: user submitted]
 app.get('/houses/:id', catchAsync(async (req, res,) => {
-    const house = await House.findById(req.params.id)
+    const house = await House.findById(req.params.id).populate('reviews');
     res.render('houses/show', { house });
 }));
 
@@ -89,6 +99,23 @@ app.delete('/houses/:id', catchAsync(async (req, res) => {
     await House.findByIdAndDelete(id);
     res.redirect('/houses');
 }))
+
+app.post('/houses/:id/reviews', validateReview, catchAsync(async (req, res) => {
+    const house = await House.findById(req.params.id);
+    const review = new Review(req.body.review);
+    house.reviews.push(review);
+    await review.save();
+    await house.save();
+    res.redirect(`/houses/${house._id}`);
+}))
+
+app.delete('/houses/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await House.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/houses/${id}`);
+}))
+
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404))
 })
