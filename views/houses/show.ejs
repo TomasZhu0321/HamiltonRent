@@ -10,14 +10,17 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= house.location%></li>
+                <li class="list-group-item">Submitted by <%= house.author.username%></li>
                 <li class="list-group-item">$<%= house.price%>/night</li>
             </ul>
+            <%  if( currentUser && house.author.equals(currentUser._id))  {%>
             <div class="card-body">
                 <a class="card-link btn btn-info" href="/houses/<%=house._id%>/edit">Edit</a>
                 <form class="d-inline" action="/houses/<%=house._id%>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>
                 </form>
             </div>
+            <% } %>
             <div class="card-footer text-muted">
                 2 days ago
             </div>
@@ -25,6 +28,7 @@
     </div>
 </div>
 <div class="col-6">
+    <% if(currentUser){ %>
     <h2>Comments</h2>
     <form action="/houses/<%=house._id%>/reviews" method="POST" class="mb-3 validated-form" novalidate>
         <div class="mb-3">
@@ -37,14 +41,18 @@
         </div>
         <button class="btn btn-success">Submit</button>
     </form>
+    <% } %>
     <% for(let review of house.reviews) { %>
     <div class="card mb-3 ">
         <div class="card-body">
             <h5 class="card-title">Rating: <%= review.rating %></h5>
+            <h6 class="card-subtitle mb-2 text-muted">By <%= review.author.username%></h6>
             <p class="card-text">Review: <%= review.body %></p>
+            <%  if( currentUser && review.author.equals(currentUser._id))  {%>
             <form action="/houses/<%=house._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
                 <button class="btn btn-sm btn-danger">Delete</button>
             </form>
+            <% } %>
         </div>
     </div>
     <% } %>
