@@ -2,12 +2,14 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
-const House = require('./models/house');
 const ejsMate = require('ejs-mate');
-const catchAsync = require('./utils/catchAsync');
+const session = require('express-session');
+const flash = require('connect-flash');
 const ExpressError = require('./utils/ExpressError');
-const { houseSchemas,reviewSchema } = require('./schemas.js');
-const Review = require('./models/review');
+
+
+const houses = require('./routes/houses');
+const reviews = require('./routes/reviews');
 
 mongoose.connect('mongodb://localhost:27017/hamilton');
 const db = mongoose.connection;
@@ -32,97 +34,42 @@ app.set('views', path.join(__dirname, 'views'))
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+//Does not execute any req, just a setup function telling experss that it needs to serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
-const validateHouse = (req, res, next) => {
-    const { error } = houseSchemas.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
+const sessionConfig = {
+    secret: 'thisshouldbeabettersecret!',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+app.use(session(sessionConfig))
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+
+app.use('/houses', houses)
+app.use('/houses/:id/reviews', reviews)
 
 app.get('/', (req, res) => {
     res.render('home')
 });
 
-//FIND:
-//syn: Model.find()
-app.get('/houses', catchAsync(async (req, res) => {
-    const houses = await House.find({});
-    res.render('houses/index', { houses })
-}))
-
-app.get('/houses/new', (req, res) => {
-    res.render('houses/new');
-})
-
-//CREATE:
-//According to Model to create instance
-//using save() to mongoDB
-app.post('/houses', validateHouse,catchAsync(async (req, res) => {
-    const house = new House(req.body.house);
-    await house.save();
-    res.redirect(`/houses/${house._id}`)
-}))
-
-// req.params : url [compared to req.body: user submitted]
-app.get('/houses/:id', catchAsync(async (req, res,) => {
-    const house = await House.findById(req.params.id).populate('reviews');
-    res.render('houses/show', { house });
-}));
-
-app.get('/houses/:id/edit', catchAsync(async (req, res) => {
-    const house = await House.findById(req.params.id)
-    res.render('houses/edit', { house });
-}))
-
-//...: 1. spread; 2. overwirte same key content
-app.put('/houses/:id',validateHouse, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const house = await House.findByIdAndUpdate(id, { ...req.body.house });
-    res.redirect(`/houses/${house._id}`)
-}));
-
-app.delete('/houses/:id', catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await House.findByIdAndDelete(id);
-    res.redirect('/houses');
-}))
-
-app.post('/houses/:id/reviews', validateReview, catchAsync(async (req, res) => {
-    const house = await House.findById(req.params.id);
-    const review = new Review(req.body.review);
-    house.reviews.push(review);
-    await review.save();
-    await house.save();
-    res.redirect(`/houses/${house._id}`);
-}))
-
-app.delete('/houses/:id/reviews/:reviewId', catchAsync(async (req, res) => {
-    const { id, reviewId } = req.params;
-    await House.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-    await Review.findByIdAndDelete(reviewId);
-    res.redirect(`/houses/${id}`);
-}))
-
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404))
 })
-//Express error handler function
+
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
-    if (!err.message) err.message = 'Something Went Wrong...'
+    if (!err.message) err.message = 'Oh No, Something Went Wrong!'
     res.status(statusCode).render('error', { err })
 })
 
