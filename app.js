@@ -31,6 +31,9 @@ app.use(methodOverride('_method'));
 app.get('/', (req, res) => {
     res.render('home')
 });
+
+//FIND:
+//syn: Model.find()
 app.get('/houses', async (req, res) => {
     const houses = await House.find({});
     res.render('houses/index', { houses })
@@ -39,12 +42,16 @@ app.get('/houses/new', (req, res) => {
     res.render('houses/new');
 })
 
+//CREATE:
+//According to Model to create instance
+//using save() to mongoDB
 app.post('/houses', async (req, res) => {
     const house = new House(req.body.house);
     await house.save();
     res.redirect(`/houses/${house._id}`)
 })
 
+// req.params : url [compared to req.body: user submitted]
 app.get('/houses/:id', async (req, res,) => {
     const house = await House.findById(req.params.id)
     res.render('houses/show', { house });
@@ -55,6 +62,7 @@ app.get('/houses/:id/edit', async (req, res) => {
     res.render('houses/edit', { house });
 })
 
+//...: 1. spread; 2. overwirte same key content
 app.put('/houses/:id', async (req, res) => {
     const { id } = req.params;
     const house = await House.findByIdAndUpdate(id, { ...req.body.house });
