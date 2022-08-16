@@ -17,12 +17,14 @@ const sample = array => array[Math.floor(Math.random() * array.length)];
 
 const seedDB = async () => {
     await House.deleteMany({});
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 30; i++) {
         const random1000 = Math.floor(Math.random() * 1000);
+        const price = Math.floor(Math.random() * 20) + 10;
         const house = new House({
             author: '62fa9de680a7fc1f8c8fbcb9',
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
+            price,
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam dolores vero perferendis laudantium, consequuntur voluptatibus nulla architecto, sit soluta esse iure sed labore ipsam a cum nihil atque molestiae deserunt!',
             images: [
                 {
@@ -33,7 +35,14 @@ const seedDB = async () => {
                     url: 'https://res.cloudinary.com/douqbebwk/image/upload/v1600060601/YelpCamp/ruyoaxgf72nzpi4y6cdi.png',
                     filename: 'YelpCamp/ruyoaxgf72nzpi4y6cdi'
                 }
-            ]
+            ],
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    cities[random1000].longitude,
+                    cities[random1000].latitude,
+                ]
+            },
         })
         await house.save();
     }

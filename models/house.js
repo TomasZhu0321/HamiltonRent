@@ -9,10 +9,21 @@ const ImageSchema = new Schema({
 ImageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200');
 });
-
+const opts = { toJSON: { virtuals: true } };
 const HouseSchema = new Schema({
     title: String,
     images: [ImageSchema],
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     price: String,
     description: String,
     location: String,
@@ -26,6 +37,12 @@ const HouseSchema = new Schema({
             ref:  'Review'
         }
     ]
+},opts);
+
+HouseSchema.virtual('properties.popUpMarkup').get(function () {
+    return `
+    <strong><a href="/houses/${this._id}">${this.title}</a><strong>
+    <p>${this.description.substring(0, 20)}...</p>`
 });
 HouseSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
