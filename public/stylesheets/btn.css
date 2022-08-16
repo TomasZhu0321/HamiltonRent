@@ -1,0 +1,45 @@
+.btn-home { 
+    color: #FFFFFF; 
+    background-color: #2471A3; 
+    border-color: #AEB6BF; 
+  } 
+   
+  .btn-home:hover, 
+  .btn-home:focus, 
+  .btn-home:active, 
+  .btn-home.active, 
+  .open .dropdown-toggle.btn-home { 
+    color: #FFFFFF; 
+    background-color: #AED6F1; 
+    border-color: #AEB6BF; 
+  } 
+   
+  .btn-home:active, 
+  .btn-home.active, 
+  .open .dropdown-toggle.btn-home { 
+    background-image: none; 
+  } 
+   
+  .btn-home.disabled, 
+  .btn-home[disabled], 
+  fieldset[disabled] .btn-home, 
+  .btn-home.disabled:hover, 
+  .btn-home[disabled]:hover, 
+  fieldset[disabled] .btn-home:hover, 
+  .btn-home.disabled:focus, 
+  .btn-home[disabled]:focus, 
+  fieldset[disabled] .btn-home:focus, 
+  .btn-home.disabled:active, 
+  .btn-home[disabled]:active, 
+  fieldset[disabled] .btn-home:active, 
+  .btn-home.disabled.active, 
+  .btn-home[disabled].active, 
+  fieldset[disabled] .btn-home.active { 
+    background-color: #AED6F1; 
+    border-color: #AEB6BF; 
+  } 
+   
+  .btn-home .badge { 
+    color: #AED6F1; 
+    background-color: #FFFFFF; 
+  }

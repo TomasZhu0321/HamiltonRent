@@ -5,8 +5,29 @@ const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 module.exports.index = async (req, res) => {
-  const houses = await House.find({}).populate('popupText');
-  res.render("houses/index", { houses });
+  const houses = await House.find({});
+  const list = [];
+  for (let i = 0; i < houses.length; i++) {
+    list.push(houses[i].title);
+  }
+  if (req.query.search) {
+    const fuzzyQuery = (list, keyWord) => {
+      const reg = new RegExp(keyWord);
+      const arr = [];
+      for (let i = 0; i < list.length; i++) {
+        if (reg.test(list[i])) {
+          arr.push(list[i]);
+        }
+      }
+      return arr;
+    };
+    const arr = fuzzyQuery(list, req.query.search);
+    const houses = await House.find({ title: arr });
+    console.log(houses);
+    res.render("houses/index", { houses });
+  } else {
+    res.render("houses/index", { houses });
+  }
 };
 
 module.exports.renderNewForm = (req, res) => {

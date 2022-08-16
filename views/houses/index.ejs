@@ -1,36 +1,63 @@
 <% layout('layouts/boilerplate')%>
-<div id="map" style="width: 100%; height: 500px"></div>
-<div class="container">
-<h1>All Houses</h1>
-<div>
-  <a href="/houses/new">Add Houses</a>
-</div>
-<% for (let house of houses){%>
-<div class="card" mb-3>
-  <div class="row">
-    <div class="col-md-4">
-      <% if(house.images.length) {%>
-      <img class="img-fluid" alt="" src="<%=house.images[0].url%>" />
-    </div>
-    <% }else{ %>
-    <img class="img-fluid" alt="" src="" />
-    <% } %>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title"><%= house.title %></h5>
-        <p class="card-text"><%= house.description %></p>
-        <p class="card-text">
-          <small class="text-muted"><%= house.location%></small>
-        </p>
-        <a class="btn btn-primary" href="/houses/<%=house._id%>"
-          >View <%=house.title%></a
-        >
+<link rel="stylesheet" href="/stylesheets/btn.css" />
+<link rel="stylesheet" href="/stylesheets/index.css" />
+<header class="header-bg py-5">
+  <div class="container px-4 px-lg-5 my-5">
+    <div class="text-center text-white">
+      <h1 class="display-4 fw-bolder">Hamilton House Market</h1>
+      <p class="lead fw-normal text-white-50 mb-0">
+        Start looking for your favorite house ...
+      </p>
+      <div class="container-fluid mt-5">
+        <form class="d-flex" role="search">
+          <input
+            class="form-control me-2"
+            type="search"
+            placeholder="Already have a dream house? Search here ... "
+            aria-label="Search"
+            name="search"
+          />
+          <button class="btn btn-outline-warning" type="submit">Search</button>
+        </form>
       </div>
     </div>
   </div>
+</header>
+<div class="container">
+  <div id="map" style="width:100%; height: 300px"></div>
 </div>
-<% }%>
-</div>
+  <!-- <div id="cluster-map"></div> -->
+  <section class="py-2">
+    <div class="container px-lg-2 mt-2">
+      <div
+        class="row gx-4 gx-lg-3 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
+        <% for (let house of houses){%>
+        <div class="col mb-5">
+          <div class="card h-100">
+            <% if(house.images.length) {%>
+            <img class="img-fluid" alt="" src="<%=house.images[0].url%>" />
+            <% }else{ %>
+            <img class="img-fluid" alt="" src="" />
+            <% } %>
+            <div class="card-body p-3">
+              <h5 class="card-title"><%= house.title %></h5>
+              <!-- <p class="card-text"><%= house.description %></p> -->
+              <p class="card-text">
+                <small class="text-muted"><%= house.location%></small>
+              </p>
+              <h8 class="card-text">$<%= house.price %>/per month</h8>
+              <div class="text-center">
+                <a class="btn btn-sm btn-home" href="/houses/<%=house._id%>"
+                  >More info</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <% }%>
+      </div>
+    </div>
+  </section>
 <script>
   const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
   const houses = { features: <%- JSON.stringify(houses) %>}
