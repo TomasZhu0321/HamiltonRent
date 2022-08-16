@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const House = require('../models/house');
 
 module.exports.renderRegister = (req, res) => {
     res.render('users/register');
@@ -25,7 +26,7 @@ module.exports.renderLogin = (req, res) => {
 }
 
 module.exports.login = (req, res) => {
-    req.flash('success', 'welcome back!');
+    req.flash('success', 'welcome back! ');
     const redirectUrl = req.session.returnTo || '/houses';
     delete req.session.returnTo;
     res.redirect(redirectUrl);
@@ -34,7 +35,7 @@ module.exports.login = (req, res) => {
 module.exports.logout = (req,res)=>{
     req.logout(function(err) {
         if(err){return next(err);}
-    req.flash('success','Good bye');
+    req.flash('success','Goodbye');
     res.redirect('/houses');
     });
 }

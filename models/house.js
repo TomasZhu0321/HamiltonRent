@@ -24,7 +24,7 @@ const HouseSchema = new Schema({
             required: true
         }
     },
-    price: String,
+    price: Number,
     description: String,
     location: String,
     author: {

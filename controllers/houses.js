@@ -5,7 +5,7 @@ const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 module.exports.index = async (req, res) => {
-  const houses = await House.find({});
+  const houses = await House.find({}).populate('popupText');
   res.render("houses/index", { houses });
 };
 
@@ -67,7 +67,7 @@ module.exports.updateHouse = async (req, res) => {
       $pull: { images: { filename: { $in: req.body.deleteImages } } },
     });
   }
-  req.flash("success", "Thanks for your update;)");
+  req.flash("success", "Thanks for your update ;)");
   res.redirect(`/houses/${house._id}`);
 };
 
