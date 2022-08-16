@@ -35,7 +35,7 @@
       <input class="form-control" type="file" id="image" name="image" multiple>
   </div>
 
-      <div class="mb-3">
+        <div class="mb-3">
         <% house.images.forEach(function(img, i) { %>
             <img src="<%=img.thumbnail %>" class="img-thumbnail" alt="" />
             <div class="form-check-inline">
@@ -49,9 +49,11 @@
             <label for="image-<%=i%>">Delete?</label>
             <% })%>
           </div>
+
           <div class="mb-3">
             <button class="btn btn-success">Update House Info</button>
           </div>
+
         </form>
         <a href="/houses/<%= house._id%>">Back To Houses Market</a>
       </div>
