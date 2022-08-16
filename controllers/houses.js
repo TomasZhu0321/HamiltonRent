@@ -1,4 +1,6 @@
 const House = require("../models/house");
+const { cloudinary } = require("../cloudinary");
+
 module.exports.index = async (req, res) => {
   const houses = await House.find({});
   res.render("houses/index", { houses });
@@ -13,6 +15,7 @@ module.exports.renderNewForm = (req, res) => {
 //using save() to mongoDB
 module.exports.createHouse = async (req, res) => {
   const house = new House(req.body.house);
+  house.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
   house.author = req.user._id;
   await house.save();
   req.flash("success", "Successfully made a new houses");
@@ -43,6 +46,15 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateHouse = async (req, res) => {
   const { id } = req.params;
   const house = await House.findByIdAndUpdate(id, { ...req.body.house });
+  const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
+  house.images.push(...imgs);
+  await house.save();
+  if (req.body.deleteImages) {
+    for (let filename of req.body.deleteImages) {
+        await cloudinary.uploader.destroy(filename);
+    }
+    await house.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
+}
   req.flash("success", "Thanks for your update;)");
   res.redirect(`/houses/${house._id}`);
 };
