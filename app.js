@@ -13,15 +13,17 @@ const ExpressError = require('./utils/ExpressError');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
-
+const MongoStore = require('connect-mongo');
 
 const userRoutes = require('./routes/users');
 const housesRoutes = require('./routes/houses');
 const reviewsRoutes = require('./routes/reviews');
 
-mongoose.connect('mongodb://localhost:27017/hamilton');
-const db = mongoose.connection;
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/hamilton';
 
+mongoose.connect(dbUrl);
+
+const db = mongoose.connection;
 
 /*
     1.on: event will be called every time that is occurred
@@ -45,8 +47,20 @@ app.use(methodOverride('_method'));
 //Does not execute any req, just a setup function telling experss that it needs to serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+const secret = process.env.SECRET ||'thisshouldbeabettersecret!'
+const store = new MongoStore({
+    mongoUrl: dbUrl,
+    secret,
+    touchAfter: 24 * 60 * 60
+}); 
+
+store.on("error",function(e){
+    console.log("SESSION STORE ERROR",e)
+})
 const sessionConfig = {
-    secret: 'thisshouldbeabettersecret!',
+    store,
+    name: 'session',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
