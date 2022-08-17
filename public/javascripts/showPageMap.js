@@ -3,7 +3,7 @@ const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/light-v10', // stylesheet location
     center: house.geometry.coordinates, // starting position [lng, lat]
-    zoom: 10, // starting zoom
+    zoom: 14, // starting zoom
     projection: 'globe' // display the map as a 3D globe
 });
 map.addControl(new mapboxgl.NavigationControl());

@@ -1,27 +1,43 @@
 <% layout('layouts/boilerplate')%>
 <link rel="stylesheet" href="/stylesheets/font.css" />
-<div class="row">
-  <div class="card">
+<div class="row mt-5">
+  
   <h1 class="text-center">Edit Houses</h1>
   <div class="col-6 offset-md-3">
     <form action="/houses/<%=house._id%>?_method=PUT" method="POST" novalidate class="validated-form" enctype="multipart/form-data" >
       <div class="mb-3">
-        <label class="form-label" for="title">Title</label>
+        <label class="form-label" for="title">
+          <h3>
+          Title
+          </h3>
+        </label>
         <input class="form-control" type="text" id="title" name="house[title]" value="<%=house.title %>" required/>
       </div>
 
-      <div class="mb-3"> <label class="form-label" for="location">Location</label>
+      <div class="mb-3"> <label class="form-label" for="location">
+        <h3>
+        Location
+      </h3>
+      </label>
         <input class="form-control" type="text" id="location" name="house[location]" value="<%=house.location %>" required/>
       </div>
 
-      <div class="mb-3"> <label class="form-label" for="price">House Price</label>
+      <div class="mb-3"> <label class="form-label" for="price">
+      <h3>
+        House Prices
+      </h3>
+      </label>
         <div class="input-group">
           <span class="input-group-text" id="price-label">$</span>
           <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price" aria-describedby="price-label" name="house[price]"value="<%=house.price %>"required/>
         </div>
       </div>  
        <div class="mb-3">
-        <label class="form-label" for="description">Description</label>
+        <label class="form-label" for="description">
+          <h3>
+          Description
+        </h3>
+        </label>
         <textarea
           class="form-control"
           type="text"
@@ -30,9 +46,13 @@
           required
         ><%= house.description%></textarea>
 
-    <div class="mb-3">
-      <label for="image" class="form-label" >Upload more
-          pictures...</label>
+    <div class="mb-3 mt-3">
+      <label for="image" class="form-label" >
+      <h3>
+        Upload more
+          pictures...
+        </h3>
+      </label>
       <input class="form-control" type="file" id="image" name="image" multiple>
   </div>
 
@@ -52,11 +72,17 @@
           </div>
 
           <div class="mb-3">
-            <button class="btn btn-success">Update House Info</button>
+            <button class="btn btn-success">
+              Update House Info
+            </button>
           </div>
 
         </form>
-        <a href="/houses/<%= house._id%>">Back To Houses Market</a>
+        <a href="/houses/<%= house._id%>">
+        <p>
+          Back To Houses Market
+        </p>
+        </a>
       </div>
-    </div>
+
   </div>
